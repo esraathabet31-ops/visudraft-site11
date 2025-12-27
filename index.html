@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Search Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Hide scrollbar for chrome/safari/opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* Custom Number Input Styling to match sketch arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex items-center justify-center p-4">
+
+    <!-- Mobile Device Container -->
+    <div class="relative w-full max-w-md h-[800px] bg-white rounded-[3rem] shadow-2xl border-8 border-gray-800 overflow-hidden flex flex-col">
+        
+        <!-- Phone Notch / Top Bar -->
+        <div class="absolute top-0 left-0 w-full h-8 bg-gray-800 z-50 flex justify-center">
+            <div class="w-32 h-6 bg-black rounded-b-xl"></div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-y-auto no-scrollbar pt-12 pb-20 relative">
+            
+            <!-- SCREEN 1: SEARCH FORM -->
+            <div id="screen-search" class="px-6 py-4 transition-opacity duration-300">
+                
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <div class="text-xl font-bold tracking-tighter">LOGO</div>
+                </div>
+
+                <!-- Title -->
+                <h1 class="text-3xl font-semibold text-center mb-10 text-gray-800">Lorem Ipsum</h1>
+
+                <!-- Form -->
+                <form id="flight-form" onsubmit="event.preventDefault(); navigateToResults();">
+                    
+                    <!-- From -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">From</label>
+                        <div class="relative">
+                            <input type="text" placeholder="City or Airport" class="w-full border border-gray-300 rounded-md p-3 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                            <div class="absolute right-3 top-3.5 text-gray-400 pointer-events-none">
+                                <i class="fas fa-caret-down"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- To -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">To</label>
+                        <div class="relative">
+                            <input type="text" placeholder="City or Airport" class="w-full border border-gray-300 rounded-md p-3 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                            <div class="absolute right-3 top-3.5 text-gray-400 pointer-events-none">
+                                <i class="fas fa-caret-down"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dates Row -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <!-- Fly Out -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Fly out</label>
+                            <div class="flex items-center gap-2">
+                                <input type="date" class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <i class="far fa-calendar-alt text-gray-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <!-- Fly Back -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Fly back</label>
+                            <div class="flex items-center gap-2">
+                                <input type="date" class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <i class="far fa-calendar-alt text-gray-500 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Passengers Row -->
+                    <div class="grid grid-cols-2 gap-4 mb-12">
+                        <!-- Adults -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Adults</label>
+                            <input type="number" min="1" value="1" class="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <!-- Children -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Children</label>
+                            <input type="number" min="0" value="0" class="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Continue Button -->
+                    <button type="submit" class="w-full bg-gray-900 text-white font-bold py-4 rounded-lg shadow-lg hover:bg-gray-800 active:scale-[0.98] transition-transform duration-150 uppercase tracking-wide">
+                        Continue
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- SCREEN 2: RESULTS (Hidden by default) -->
+            <div id="screen-results" class="hidden px-6 py-4 h-full flex flex-col transition-opacity duration-300">
+                
+                <!-- Nav Bar -->
+                <div class="flex items-center mb-6">
+                    <button onclick="navigateToSearch()" class="p-2 -ml-2 text-gray-600 hover:text-black transition">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <h2 class="ml-4 text-lg font-bold">Search Results</h2>
+                </div>
+
+                <!-- Mock Results List -->
+                <div class="space-y-4 overflow-y-auto pb-4">
+                    <!-- Result Card 1 -->
+                    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition cursor-pointer">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-lg">09:00</span>
+                            <div class="h-px bg-gray-300 flex-1 mx-3 relative">
+                                <i class="fas fa-plane absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-400 text-xs bg-white px-1"></i>
+                            </div>
+                            <span class="font-bold text-lg">11:30</span>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span>LHR</span>
+                            <span>Non-stop</span>
+                            <span>JFK</span>
+                        </div>
+                        <div class="mt-3 flex justify-between items-end">
+                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Economy</span>
+                            <span class="text-xl font-bold text-blue-600">$450</span>
+                        </div>
+                    </div>
+
+                    <!-- Result Card 2 -->
+                    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition cursor-pointer">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-lg">14:15</span>
+                            <div class="h-px bg-gray-300 flex-1 mx-3 relative">
+                                <i class="fas fa-plane absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-400 text-xs bg-white px-1"></i>
+                            </div>
+                            <span class="font-bold text-lg">18:45</span>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-500">
+                            <span>LHR</span>
+                            <span>1 Stop</span>
+                            <span>JFK</span>
+                        </div>
+                        <div class="mt-3 flex justify-between items-end">
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Best Value</span>
+                            <span class="text-xl font-bold text-blue-600">$380</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-auto pt-4">
+                    <button onclick="navigateToSearch()" class="w-full border-2 border-gray-900 text-gray-900 font-bold py-3 rounded-lg hover:bg-gray-50 transition">
+                        Modify Search
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Phone Home Button Area -->
+        <div class="h-16 border-t border-gray-100 flex items-center justify-center bg-white z-10">
+            <div class="w-12 h-12 rounded-full border-2 border-gray-300 cursor-pointer hover:bg-gray-50 active:bg-gray-200 transition" onclick="navigateToSearch()"></div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Logic -->
+    <script>
+        const searchScreen = document.getElementById('screen-search');
+        const resultsScreen = document.getElementById('screen-results');
+
+        function navigateToResults() {
+            // Fade out search
+            searchScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                searchScreen.classList.add('hidden');
+                
+                // Prepare results
+                resultsScreen.classList.remove('hidden');
+                resultsScreen.style.opacity = '0';
+                
+                // Trigger reflow
+                void resultsScreen.offsetWidth;
+                
+                // Fade in results
+                resultsScreen.style.opacity = '1';
+            }, 300);
+        }
+
+        function navigateToSearch() {
+            // Fade out results
+            resultsScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                resultsScreen.classList.add('hidden');
+                
+                // Prepare search
+                searchScreen.classList.remove('hidden');
+                searchScreen.style.opacity = '0';
+                
+                // Trigger reflow
+                void searchScreen.offsetWidth;
+                
+                // Fade in search
+                searchScreen.style.opacity = '1';
+            }, 300);
+        }
+    </script>
+
+    <!-- REMOTE AUDIT AGENT SCRIPT -->
+    <style>
+      .audit-highlight { 
+        outline: 4px solid #6366f1 !important; 
+        outline-offset: 2px !important;
+        transition: outline 0.2s ease-in-out;
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.5) !important;
+      }
+    </style>
+    <script>
+      window.addEventListener('message', (event) => {
+        const { type, targetSelector, text, actionId } = event.data;
+        
+        const findElement = (selector, searchText) => {
+          if (selector) {
+            try {
+              const el = document.querySelector(selector);
+              if (el) return el;
+            } catch(e) {}
+          }
+          // Fallback: search by text content in interactive elements
+          const interactives = Array.from(document.querySelectorAll('button, a, input, label, [role="button"], summary'));
+          return interactives.find(el => 
+            el.innerText?.toLowerCase().includes((searchText || selector || '').toLowerCase()) ||
+            el.placeholder?.toLowerCase().includes((searchText || selector || '').toLowerCase())
+          );
+        };
+
+        const element = findElement(targetSelector, text);
+
+        if (type === 'GET_COORDS') {
+          const target = element || document.body;
+          const rect = target.getBoundingClientRect();
+          window.parent.postMessage({ 
+            type: 'COORDS_RESPONSE', 
+            actionId,
+            coords: { 
+              x: rect.left + rect.width / 2, 
+              y: rect.top + rect.height / 2 
+            } 
+          }, '*');
+          return;
+        }
+
+        if (!element) return;
+
+        // Apply visual highlight
+        element.classList.add('audit-highlight');
+        setTimeout(() => element.classList.remove('audit-highlight'), 1000);
+
+        if (type === 'CLICK') {
+          // Trigger a real user click sequence
+          element.focus();
+          const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+          element.dispatchEvent(clickEvent);
+          // Fallback for elements that don't respond to standard click dispatch
+          if (typeof element.click === 'function') element.click();
+        } else if (type === 'TYPE') {
+          element.focus();
+          element.value = text || '';
+          // Dispatch events to trigger UI framework updates (React/Vue/etc compatibility)
+          element.dispatchEvent(new Event('input', { bubbles: true }));
+          element.dispatchEvent(new Event('change', { bubbles: true }));
+          element.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, key: 'Enter' }));
+        }
+      });
+    </script>
+</body>
+</html>
